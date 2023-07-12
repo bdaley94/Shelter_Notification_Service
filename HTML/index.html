@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+<body>
+    <form name="myform" class="form" id="form1">
+        <p>Would you like notifications for new dogs and/or new cats?</p>
+        <input type="checkbox" id="dog_checkbox" name="chk_dog" value="dogs"> Dogs<br>
+        <input type="checkbox" id="cat_checkbox" name="chk_cat" value="cats"> Cats
+        <br><br>
+      
+        <p>Would you like email or sms notifications?</p>
+        <input type="radio" class="send" id="email_id" name="notif" value="email">
+        <label for="email_id">E-mail</label>
+      
+        <input type="radio" class="send" id="sms_id" name="notif" value="sms">
+        <label for="sms_id">SMS</label>
+        <br><br>
+      
+        <label for="textbox" id="change" style="text-align: left; float: left;padding-right: 5px;"></label>
+        <input type="text" name="comm_textbox" id="textbox" hidden placeholder="" value="">
+        <br><br>
+        <button type="submit" id="subbut" hidden>Submit</button>
+        <b><p id="success_fail"></p></b>
+      </form>
+    <script src="HPA_script.js"></script>
+</body>
+</html>
