@@ -39,6 +39,8 @@ def lambda_handler(event, context):
                 emailList_cats.append(emailDict)
         print(f"emailList_cats: {emailList_cats}")
         
+        message = """<html>
+                     <body>"""
         #Iterate through all items in passed dict to build out the emails
         for dog, DogDict in ArrivalsDict.items():
             #print(DogDict)
@@ -61,53 +63,55 @@ def lambda_handler(event, context):
             
             #Build body and subject of email using previously parsed info from animal dict.
             #Body is formed in HTML for formatting, hyperlink, embedding image purposes
-            subject = f"{name} is now available to adopt!"
-            message=f"""<html>
-                        <body>
-                        <img src={photo} alt="dog" width="40%" /><br>
+            if len(ArrivalsDict) == 1:
+                subject = f"{name} is now available to adopt!"
+            else:
+                subject = f"There are new cats available to adopt!"
+            
+            message+=f"""<img src={photo} alt="cat photo" width="40%" /><br>
                         Name: {name}<br>
                         Age: {age}<br>
                         Breed: {breed}<br>
                         Weight: {weight}<br>
-                        Link: {url}
-                        </body>
-                        </html>"""
+                        Link: {url}<br><br>"""
             
-            #Iterate through each email address in dict, if they are requesting email notifs then proceed.
-            for emailDict in emailList_cats:
-                if emailDict['comm_type'] == 'email':
-                    email_address = emailDict['comm_medium']
-                    try:
-                        #Add footer to each email body with custom email address added to unsubscribe link
-                        message1 = message
-                        footer = f"""<footer>
-                                        <p><a href="https://rt4jhd7yf5.execute-api.us-east-1.amazonaws.com/unsub?{email_address}">Unsubscribe from this email list.</a></p>
-                                    </footer>"""
-                        message1 = message1[:-17] + footer + message1[-16:]
+        #Iterate through each email address in dict, if they are requesting email notifs then proceed.
+        for emailDict in emailList_cats:
+            if emailDict['comm_type'] == 'email':
+                email_address = emailDict['comm_medium']
+                try:
+                    #Add footer to each email body with custom email address added to unsubscribe link
+                    message1 = message
+                    footer = f"""<footer>
+                                <p><a href="https://rt4jhd7yf5.execute-api.us-east-1.amazonaws.com/unsub?{email_address}">Unsubscribe from this email list.</a></p>
+                            </footer>
+                            </body>
+                            </html>"""
+                    message1 += footer
 
-                        print(f"Sending email for {name} to {email_address}")
-                        response = client.send_email(
-                            Destination={
-                                'ToAddresses': [
-                                    email_address,
-                                ],
-                            },
-                            Message={
-                                'Body': {
-                                    'Html': {
-                                        'Charset': 'UTF-8',
-                                        'Data': message1,
-                                    }
-                                },
-                                'Subject': {
+                    print(f"Sending email for {name} to {email_address}")
+                    response = client.send_email(
+                        Destination={
+                            'ToAddresses': [
+                                email_address,
+                            ],
+                        },
+                        Message={
+                            'Body': {
+                                'Html': {
                                     'Charset': 'UTF-8',
-                                    'Data': subject,
-                                },
+                                    'Data': message1,
+                                }
                             },
-                            Source='hiring@brandon-daley.com',
-                        )
-                    except Exception as e:
-                        print(f"Error: {e}")
-                        print("Email send failure.")
+                            'Subject': {
+                                'Charset': 'UTF-8',
+                                'Data': subject,
+                            },
+                        },
+                        Source='hiring@brandon-daley.com',
+                    )
+                except Exception as e:
+                    print(f"Error: {e}")
+                    print("Email send failure.")
             
     return empty_event
